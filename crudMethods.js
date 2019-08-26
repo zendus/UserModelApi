@@ -1,4 +1,7 @@
 const fs = require('fs');
+const {promisify} = require('util');
+const proReadFile = promisify(fs.readFile);  
+const proDeleteFile = promisify(fs.unlink);
 
 var crudList = {};
 
@@ -13,23 +16,24 @@ crudList.create = function (filename, data) {
     
 }
 
-crudList.read = function (filename) {
+crudList.read = function (filename,callback) {
     var dir = __dirname + '/';
-    fs.readFile(dir + filename, (err, data) => {
-        var stringifiedData = JSON.stringify(data);
-        if (err) {
-            console.log(err);
-        }
-        // callback(stringifiedData);
+    proReadFile(dir + filename,callback)
+    .then(answer=>{
+        callback(answer)
     })
+    
 }
 
 crudList.update = function () {
 
 }
 
-crudList.delete = function () { 
-        fs.delete()
+crudList.delete = function (path) {
+        proDeleteFile(path)
+        .catch(err => {
+            callback(err)
+        } )
 }
 
 module.exports = crudList;

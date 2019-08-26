@@ -10,7 +10,7 @@ server = http.createServer((request, response) => {
     var parsedurl = parse(request.url, true);
 
 
-    if (parsedurl.method == 'POST') {
+    if (request.method == 'POST') {
         var container = {};
         request.on('data', (receivedData) => {
             container = JSON.parse(receivedData);
@@ -18,7 +18,7 @@ server = http.createServer((request, response) => {
         
         request.on('end', () => {
             router(request.method,container);
-            return response.end('done');
+            response.end('done');
         });
 
 
@@ -27,27 +27,37 @@ server = http.createServer((request, response) => {
     var dir = __dirname + '/';
     
     if (request.method == 'GET') {
-        (function (filename) {
-            fs.readFile(dir + filename, (err, data) => {
-                if (err) {
-                    console.log(err);
-                }
-                var stringifiedData = JSON.stringify(data);
-                response.end(stringifiedData);
-            })
-        })('lilStunt');
+        // (function (filename) {
+        //     fs.readFile(dir + filename, 'utf-8', (err, data) => {
+        //         if (err) {
+        //             console.log(err);
+        //         }
+        //         response.end(data);
+        //     })
+        // })('lilStunt');
+        action.read('lilStunt', (data) =>{
+            response.end(data);
+        })
     }
 
     if (request.method == 'DELETE'){
-        (function(path) {
-            fs.unlink(dir + path, (err)=>{
-                if (err){
-                    console.log(err)
-                }
-            })
+        // (function(path) {
+        //     fs.unlink(dir + path, (err)=>{
+        //         if (err){
+        //             console.log(err)
+        //         }
+        //     })
 
-        })('Stu201503018');
+        // })('Stu2015');
+        // response.end('end');
+        action.delete(dir + 'Stu2015', (err) => {
+            if (err){
+                console.log(err)
+            }
+        })
+        response.end('file deleted');
     }
+
 
 
 })
